@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>绿源鲜生 - 新鲜农产品直供平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#4CAF50',    // 主绿色 - 代表新鲜与自然
+            secondary: '#FF9800',  // 辅助色 - 代表成熟与活力
+            neutral: {
+              100: '#F9F9F9',
+              200: '#F0F0F0',
+              300: '#E0E0E0',
+              800: '#424242',
+              900: '#212121'
+            }
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+      .card-hover:hover {
+        transform: translateY(-5px);
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body class="font-inter bg-neutral-100 text-neutral-800">
+  <!-- 顶部通知栏 -->
+  <div class="bg-primary text-white text-center py-2 text-sm">
+    <p>📦 全场满99元包邮 | 新用户注册立减20元 <a href="#" class="underline ml-1">立即领取</a></p>
+  </div>
+
+  <!-- 导航栏 -->
+  <header id="navbar" class="bg-white shadow-sm sticky top-0 z-50 transition-all duration-300">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between py-4">
+        <!-- 网站 Logo -->
+        <a href="#" class="flex items-center space-x-2">
+          <i class="fa fa-leaf text-2xl text-primary"></i>
+          <span class="text-xl font-bold text-neutral-900">绿源鲜生</span>
+        </a>
+        <!-- 导航菜单 -->
+        <div class="flex items-center space-x-1 md:space-x-4">
+          <a href="#" class="p-2 text-neutral-600 hover:text-primary transition-colors relative">
+            <i class="fa fa-user text-lg"></i>
+            <span class="hidden md:inline ml-1">我的</span>
+          </a>
+          <a href="#" class="p-2 text-neutral-600 hover:text-primary transition-colors relative">
+            <i class="fa fa-heart text-lg"></i>
+            <span class="hidden md:inline ml-1">收藏</span>
+            <span class="absolute -top-1 -right-1 bg-secondary text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">3</span>
+          </a>
+          <a href="#" class="p-2 text-neutral-600 hover:text-primary transition-colors relative" id="cart-icon">
+            <i class="fa fa-shopping-cart text-lg"></i>
+            <span class="hidden md:inline ml-1">购物车</span>
+            <span class="absolute -top-1 -right-1 bg-secondary text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">2</span>
+          </a>
+          <button id="mobile-menu-btn" class="md:hidden p-2 text-neutral-600">
+            <i class="fa fa-bars text-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 搜索框 - 仅在移动端显示 -->
+      <div class="md:hidden pb-4">
+        <div class="relative w-full">
+          <input type="text" placeholder="搜索新鲜农产品..." class="w-full pl-10 pr-4 py-2 rounded-full border border-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+          <i class="fa fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral-400"></i>
+        </div>
+      </div>
+
+      <!-- 分类导航 - 仅在中等以上屏幕显示 -->
+      <nav class="hidden md:flex items-center space-x-1 overflow-x-auto scrollbar-hide pb-2">
+        <a href="#" class="whitespace-nowrap px-4 py-2 text-primary font-medium border-b-2 border-primary">商品列表</a>
+      </nav>
+    </div>
+
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="md:hidden bg-white shadow-lg absolute w-full left-0 top-full transform -translate-y-full opacity-0 transition-all duration-300 invisible z-50">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex flex-col space-y-1">
+          <a href="#" class="py-3 px-4 hover:bg-neutral-100 rounded-lg transition-colors flex items-center">
+            <i class="fa fa-home w-6 text-primary"></i>
+            <span class="ml-3">首页</span>
+          </a>
+          <a href="#" class="py-3 px-4 hover:bg-neutral-100 rounded-lg transition-colors flex items-center">
+            <i class="fa fa-apple w-6 text-primary"></i>
+            <span class="ml-3">新鲜水果</span>
+          </a>
+          <a href="#" class="py-3 px-4 hover:bg-neutral-100 rounded-lg transition-colors flex items-center">
+            <i class="fa fa-lemon-o w-6 text-primary"></i>
+            <span class="ml-3">时令蔬菜</span>
+          </a>
+          <a href="#" class="py-3 px-4 hover:bg-neutral-100 rounded-lg transition-colors flex items-center">
+            <i class="fa fa-cutlery w-6 text-primary"></i>
+            <span class="ml-3">米面粮油</span>
+          </a>
+          <a href="#" class="py-3 px-4 hover:bg-neutral-100 rounded-lg transition-colors flex items-center">
+            <i class="fa fa-shopping-bag w-6 text-primary"></i>
+            <span class="ml-3">我的订单</span>
+          </a>
+          <a href="#" class="py-3 px-4 hover:bg-neutral-100 rounded-lg transition-colors flex items-center">
+            <i class="fa fa-user w-6 text-primary"></i>
+            <span class="ml-3">个人中心</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 购物车侧边栏 -->
+  <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 overflow-y-auto">
+    <div class="p-4 border-b border-neutral-200">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold">购物车 (2)</h3>
+        <button id="close-cart" class="p-2 text-neutral-500 hover:text-neutral-800">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="p-4">
+      <!-- 购物车商品 1 -->
+      <div class="flex py-4 border-b border-neutral-100">
+        <img src="https://picsum.photos/id/1080/100/100" alt="草莓" class="w-20 h-20 object-cover rounded-lg">
+        <div class="ml-3 flex-1">
+          <h4 class="font-medium">新鲜草莓 250g</h4>
+          <p class="text-sm text-neutral-500 mt-1">有机种植 · 现摘现发</p>
+          <div class="flex justify-between items-center mt-2">
+            <div class="flex items-center border rounded-md">
+              <button class="w-7 h-7 flex items-center justify-center text-neutral-500 hover:bg-neutral-100">-</button>
+              <input type="number" value="1" min="1" class="w-8 h-7 text-center border-x">
+              <button class="w-7 h-7 flex items-center justify-center text-neutral-500 hover:bg-neutral-100">+</button>
+            </div>
+            <span class="font-semibold">¥29.90</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 购物车商品 2 -->
+      <div class="flex py-4 border-b border-neutral-100">
+        <img src="../img_buy/img01.png" alt="有机蔬菜组合" class="w-20 h-20 object-cover rounded-lg">
+        <div class="ml-3 flex-1">
+          <h4 class="font-medium">有机蔬菜组合 500g</h4>
+          <p class="text-sm text-neutral-500 mt-1">多种搭配 · 营养均衡</p>
+          <div class="flex justify-between items-center mt-2">
+            <div class="flex items-center border rounded-md">
+              <button class="w-7 h-7 flex items-center justify-center text-neutral-500 hover:bg-neutral-100">-</button>
+              <input type="number" value="1" min="1" class="w-8 h-7 text-center border-x">
+              <button class="w-7 h-7 flex items-center justify-center text-neutral-500 hover:bg-neutral-100">+</button>
+            </div>
+            <span class="font-semibold">¥39.90</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 购物车空状态 (默认隐藏) -->
+      <div id="empty-cart" class="hidden py-12 text-center">
+        <div class="w-24 h-24 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fa fa-shopping-cart text-3xl text-neutral-400"></i>
+        </div>
+        <p class="text-neutral-500">购物车还是空的哦</p>
+        <button class="mt-4 text-primary hover:underline">去逛逛</button>
+      </div>
+    </div>
+
+    <!-- 购物车底部 -->
+    <div class="p-4 border-t border-neutral-200 sticky bottom-0 bg-white">
+      <div class="flex justify-between mb-4">
+        <span>合计:</span>
+        <span class="text-xl font-bold text-primary">¥69.80</span>
+      </div>
+      <button class="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg transition-colors font-medium">
+        结算
+      </button>
+    </div>
+  </div>
+
+  <!-- 遮罩层 -->
+  <div id="overlay" class="fixed inset-0 bg-black/50 z-40 opacity-0 invisible transition-opacity duration-300"></div>
+
+  <!-- 主横幅 -->
+  <section class="relative h-[200px] md:h-[350px] overflow-hidden">
+    <img src="https://picsum.photos/id/133/1920/600" alt="新鲜农产品" class="w-full h-full object-cover">
+    <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+    <div class="absolute inset-0 flex items-center">
+      <div class="container mx-auto px-4">
+        <div class="max-w-md text-white">
+          <h1 class="text-[clamp(1.8rem,5vw,3rem)] font-bold mb-3 text-shadow">产地直供<br>新鲜直达</h1>
+          <p class="mb-6 text-white/90">从田间到餐桌，新鲜不等待</p>
+          <a href="#products" class="inline-block bg-secondary hover:bg-secondary/90 text-white px-6 py-3 rounded-full transition-colors font-medium">
+            立即选购
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 特色服务 -->
+  <section class="py-6 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div class="p-3">
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
+            <i class="fa fa-truck text-primary"></i>
+          </div>
+          <p class="text-sm">新鲜速达</p>
+        </div>
+        <div class="p-3">
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
+            <i class="fa fa-leaf text-primary"></i>
+          </div>
+          <p class="text-sm">有机认证</p>
+        </div>
+        <div class="p-3">
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
+            <i class="fa fa-shield text-primary"></i>
+          </div>
+          <p class="text-sm">品质保障</p>
+        </div>
+        <div class="p-3">
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
+            <i class="fa fa-refresh text-primary"></i>
+          </div>
+          <p class="text-sm">无理由退换</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 限时特惠 -->
+  <section class="py-10 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold">限时特惠</h2>
+        <a href="#" class="text-primary hover:underline text-sm flex items-center">
+          查看全部 <i class="fa fa-angle-right ml-1"></i>
+        </a>
+      </div>
+
+      <div class="relative">
+        <!-- 倒计时 -->
+        <div class="flex justify-center space-x-3 mb-6">
+          <div class="text-center">
+            <div class="bg-neutral-100 w-12 h-12 rounded-lg flex items-center justify-center font-bold text-neutral-800">12</div>
+            <span class="text-xs text-neutral-500 mt-1 block">小时</span>
+          </div>
+          <div class="text-center">
+            <div class="bg-neutral-100 w-12 h-12 rounded-lg flex items-center justify-center font-bold text-neutral-800">30</div>
+            <span class="text-xs text-neutral-500 mt-1 block">分钟</span>
+          </div>
+          <div class="text-center">
+            <div class="bg-neutral-100 w-12 h-12 rounded-lg flex items-center justify-center font-bold text-neutral-800">45</div>
+            <span class="text-xs text-neutral-500 mt-1 block">秒</span>
+          </div>
+        </div>
+
+        <!-- 特惠商品 -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <!-- 特惠商品 1 -->
+          <div class="bg-neutral-100 rounded-lg overflow-hidden card-hover">
+            <div class="relative">
+              <img src="https://picsum.photos/id/1080/300/300" alt="新鲜草莓" class="w-full h-40 object-cover">
+              <div class="absolute top-2 left-2 bg-secondary text-white text-xs px-2 py-1 rounded">
+                限时特惠
+              </div>
+            </div>
+            <div class="p-3">
+              <h3 class="font-medium text-sm mb-1 line-clamp-1">新鲜草莓 250g</h3>
+              <div class="flex items-center mb-2">
+                <span class="text-secondary font-bold">¥29.9</span>
+                <span class="text-neutral-400 text-xs line-through ml-2">¥39.9</span>
+              </div>
+              <button class="w-full bg-primary/10 hover:bg-primary/20 text-primary text-sm py-1.5 rounded transition-colors">
+                加入购物车
+              </button>
+            </div>
+          </div>
+
+          <!-- 特惠商品 2 -->
+          <div class="bg-neutral-100 rounded-lg overflow-hidden card-hover">
+            <div class="relative">
+              <img src="../img_buy/img02.png" alt="有机生菜" class="w-full h-40 object-cover">
+              <div class="absolute top-2 left-2 bg-secondary text-white text-xs px-2 py-1 rounded">
+                限时特惠
+              </div>
+            </div>
+            <div class="p-3">
+              <h3 class="font-medium text-sm mb-1 line-clamp-1">有机生菜 300g</h3>
+              <div class="flex items-center mb-2">
+                <span class="text-secondary font-bold">¥9.9</span>
+                <span class="text-neutral-400 text-xs line-through ml-2">¥15.9</span>
+              </div>
+              <button class="w-full bg-primary/10 hover:bg-primary/20 text-primary text-sm py-1.5 rounded transition-colors">
+                加入购物车
+              </button>
+            </div>
+          </div>
+
+          <!-- 特惠商品 3 -->
+          <div class="bg-neutral-100 rounded-lg overflow-hidden card-hover">
+            <div class="relative">
+              <img src="../img_buy/img03.png" alt="土鸡蛋" class="w-full h-40 object-cover">
+              <div class="absolute top-2 left-2 bg-secondary text-white text-xs px-2 py-1 rounded">
+                限时特惠
+              </div>
+            </div>
+            <div class="p-3">
+              <h3 class="font-medium text-sm mb-1 line-clamp-1">农家土鸡蛋 10枚</h3>
+              <div class="flex items-center mb-2">
+                <span class="text-secondary font-bold">¥19.9</span>
+                <span class="text-neutral-400 text-xs line-through ml-2">¥26.9</span>
+              </div>
+              <button class="w-full bg-primary/10 hover:bg-primary/20 text-primary text-sm py-1.5 rounded transition-colors">
+                加入购物车
+              </button>
+            </div>
+          </div>
+
+          <!-- 特惠商品 4 -->
+          <div class="bg-neutral-100 rounded-lg overflow-hidden card-hover">
+            <div class="relative">
+              <img src="../img_buy/img04.png" alt="圣女果" class="w-full h-40 object-cover">
+              <div class="absolute top-2 left-2 bg-secondary text-white text-xs px-2 py-1 rounded">
+                限时特惠
+              </div>
+            </div>
+            <div class="p-3">
+              <h3 class="font-medium text-sm mb-1 line-clamp-1">千禧圣女果 500g</h3>
+              <div class="flex items-center mb-2">
+                <span class="text-secondary font-bold">¥12.9</span>
+                <span class="text-neutral-400 text-xs line-through ml-2">¥18.9</span>
+              </div>
+              <button class="w-full bg-primary/10 hover:bg-primary/20 text-primary text-sm py-1.5 rounded transition-colors">
+                加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 分类导航 - 仅在移动端显示 -->
+  <section class="py-6 bg-white md:hidden">
+    <div class="container mx-auto px-4">
+      <div class="flex overflow-x-auto scrollbar-hide space-x-4 pb-2">
+        <a href="#" class="flex-shrink-0 w-16 flex flex-col items-center">
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-1">
+            <i class="fa fa-th text-primary"></i>
+          </div>
+          <span class="text-xs">全部</span>
+        </a>
+        <a href="#" class="flex-shrink-0 w-16 flex flex-col items-center">
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-1">
+            <i class="fa fa-apple text-primary"></i>
+          </div>
+          <span class="text-xs">水果</span>
+        </a>
+        <a href="#" class="flex-shrink-0 w-16 flex flex-col items-center">
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-1">
+            <i class="fa fa-lemon-o text-primary"></i>
+          </div>
+          <span class="text-xs">蔬菜</span>
+        </a>
+        <a href="#" class="flex-shrink-0 w-16 flex flex-col items-center">
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-1">
+            <i class="fa fa-cutlery text-primary"></i>
+          </div>
+          <span class="text-xs">粮油</span>
+        </a>
+        <a href="#" class="flex-shrink-0 w-16 flex flex-col items-center">
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-1">
+            <i class="fa fa-drumstick-bite text-primary"></i>
+          </div>
+          <span class="text-xs">肉类</span>
+        </a>
+        <a href="#" class="flex-shrink-0 w-16 flex flex-col items-center">
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-1">
+            <i class="fa fa-fish text-primary"></i>
+          </div>
+          <span class="text-xs">水产</span>
+        </a>
+        <a href="#" class="flex-shrink-0 w-16 flex flex-col items-center">
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-1">
+            <i class="fa fa-cubes text-primary"></i>
+          </div>
+          <span class="text-xs">干货</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 精选商品 -->
+  <section id="products" class="py-10 bg-neutral-100">
+    <div class="container mx-auto px-4">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold">精选农产品</h2>
+        <div class="flex space-x-2">
+          <button class="px-3 py-1 bg-white border border-neutral-300 rounded hover:border-primary hover:text-primary transition-colors">
+            推荐
+          </button>
+          <button class="px-3 py-1 bg-white border border-neutral-300 rounded hover:border-primary hover:text-primary transition-colors">
+            销量
+          </button>
+          <button class="px-3 py-1 bg-white border border-neutral-300 rounded hover:border-primary hover:text-primary transition-colors">
+            价格
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <!-- 商品 1 -->
+        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all card-hover">
+          <div class="relative">
+            <img src="../picture/img03.png" alt="烟台红富士苹果" class="w-full h-48 object-cover">
+            <div class="absolute top-2 right-2 bg-primary/90 text-white text-xs px-2 py-1 rounded">
+              有机认证
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="flex items-center mb-1">
+              <div class="flex">
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star-half-o text-yellow-400 text-xs"></i>
+              </div>
+              <span class="text-xs text-neutral-500 ml-1">(128)</span>
+            </div>
+            <h3 class="font-medium mb-2 line-clamp-1">烟台红富士苹果 5斤装</h3>
+            <p class="text-sm text-neutral-500 mb-3 line-clamp-2">脆甜多汁，果园直供，自然成熟，不打蜡</p>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">¥49.90</span>
+              <button class="w-9 h-9 bg-primary/10 hover:bg-primary/20 text-primary rounded-full flex items-center justify-center transition-colors">
+                <i class="fa fa-shopping-cart"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品 2 -->
+        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all card-hover">
+          <div class="relative">
+            <img src="../img_buy/img01.png" alt="有机蔬菜组合" class="w-full h-48 object-cover">
+          </div>
+          <div class="p-4">
+            <div class="flex items-center mb-1">
+              <div class="flex">
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star-o text-yellow-400 text-xs"></i>
+              </div>
+              <span class="text-xs text-neutral-500 ml-1">(96)</span>
+            </div>
+            <h3 class="font-medium mb-2 line-clamp-1">有机蔬菜组合 3斤装</h3>
+            <p class="text-sm text-neutral-500 mb-3 line-clamp-2">多种新鲜时蔬搭配，农场直供，现摘现发</p>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">¥39.90</span>
+              <button class="w-9 h-9 bg-primary/10 hover:bg-primary/20 text-primary rounded-full flex items-center justify-center transition-colors">
+                <i class="fa fa-shopping-cart"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品 3 -->
+        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all card-hover">
+          <div class="relative">
+            <img src="../picture/img01.png" alt="五常大米" class="w-full h-48 object-cover">
+            <div class="absolute top-2 right-2 bg-secondary/90 text-white text-xs px-2 py-1 rounded">
+              热销
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="flex items-center mb-1">
+              <div class="flex">
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+              </div>
+              <span class="text-xs text-neutral-500 ml-1">(326)</span>
+            </div>
+            <h3 class="font-medium mb-2 line-clamp-1">五常有机大米 10斤装</h3>
+            <p class="text-sm text-neutral-500 mb-3 line-clamp-2">正宗五常产区，自然种植，口感香糯</p>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">¥89.90</span>
+              <button class="w-9 h-9 bg-primary/10 hover:bg-primary/20 text-primary rounded-full flex items-center justify-center transition-colors">
+                <i class="fa fa-shopping-cart"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品 4 -->
+        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all card-hover">
+          <div class="relative">
+            <img src="../img_buy/img03.png" alt="散养土鸡蛋" class="w-full h-48 object-cover">
+          </div>
+          <div class="p-4">
+            <div class="flex items-center mb-1">
+              <div class="flex">
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star-half-o text-yellow-400 text-xs"></i>
+              </div>
+              <span class="text-xs text-neutral-500 ml-1">(156)</span>
+            </div>
+            <h3 class="font-medium mb-2 line-clamp-1">农家散养土鸡蛋 30枚</h3>
+            <p class="text-sm text-neutral-500 mb-3 line-clamp-2">林间散养，天然谷物喂养，无抗生素</p>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">¥59.90</span>
+              <button class="w-9 h-9 bg-primary/10 hover:bg-primary/20 text-primary rounded-full flex items-center justify-center transition-colors">
+                <i class="fa fa-shopping-cart"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品 5 -->
+        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all card-hover">
+          <div class="relative">
+            <img src="../img_buy/img05.png" alt="新疆哈密瓜" class="w-full h-48 object-cover">
+          </div>
+          <div class="p-4">
+            <div class="flex items-center mb-1">
+              <div class="flex">
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star-o text-yellow-400 text-xs"></i>
+              </div>
+              <span class="text-xs text-neutral-500 ml-1">(89)</span>
+            </div>
+            <h3 class="font-medium mb-2 line-clamp-1">新疆哈密瓜 约2-3斤</h3>
+            <p class="text-sm text-neutral-500 mb-3 line-clamp-2">日照充足，甜度高，果肉细腻</p>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">¥25.90</span>
+              <button class="w-9 h-9 bg-primary/10 hover:bg-primary/20 text-primary rounded-full flex items-center justify-center transition-colors">
+                <i class="fa fa-shopping-cart"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品 6 -->
+        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all card-hover">
+          <div class="relative">
+            <img src="../img_buy/img06.png" alt="野生香菇" class="w-full h-48 object-cover">
+          </div>
+          <div class="p-4">
+            <div class="flex items-center mb-1">
+              <div class="flex">
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+              </div>
+              <span class="text-xs text-neutral-500 ml-1">(215)</span>
+            </div>
+            <h3 class="font-medium mb-2 line-clamp-1">野生干香菇 250g</h3>
+            <p class="text-sm text-neutral-500 mb-3 line-clamp-2">自然晾晒，肉厚味香，无硫熏</p>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">¥68.00</span>
+              <button class="w-9 h-9 bg-primary/10 hover:bg-primary/20 text-primary rounded-full flex items-center justify-center transition-colors">
+                <i class="fa fa-shopping-cart"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品 7 -->
+        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all card-hover">
+          <div class="relative">
+            <img src="../img_buy/img07.png" alt="散养土鸡" class="w-full h-48 object-cover">
+            <div class="absolute top-2 right-2 bg-primary/90 text-white text-xs px-2 py-1 rounded">
+              有机认证
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="flex items-center mb-1">
+              <div class="flex">
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star-half-o text-yellow-400 text-xs"></i>
+              </div>
+              <span class="text-xs text-neutral-500 ml-1">(76)</span>
+            </div>
+            <h3 class="font-medium mb-2 line-clamp-1">散养土鸡 约1.5kg</h3>
+            <p class="text-sm text-neutral-500 mb-3 line-clamp-2">山林散养180天，肉质紧实，营养丰富</p>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">¥128.00</span>
+              <button class="w-9 h-9 bg-primary/10 hover:bg-primary/20 text-primary rounded-full flex items-center justify-center transition-colors">
+                <i class="fa fa-shopping-cart"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品 8 -->
+        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all card-hover">
+          <div class="relative">
+            <img src="../img_buy/img08.png" alt="深海带鱼" class="w-full h-48 object-cover">
+          </div>
+          <div class="p-4">
+            <div class="flex items-center mb-1">
+              <div class="flex">
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star text-yellow-400 text-xs"></i>
+                <i class="fa fa-star-o text-yellow-400 text-xs"></i>
+              </div>
+              <span class="text-xs text-neutral-500 ml-1">(63)</span>
+            </div>
+            <h3 class="font-medium mb-2 line-clamp-1">冷冻深海带鱼 1kg</h3>
+            <p class="text-sm text-neutral-500 mb-3 line-clamp-2">去头去尾，肉质肥厚，口感鲜嫩</p>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">¥59.90</span>
+              <button class="w-9 h-9 bg-primary/10 hover:bg-primary/20 text-primary rounded-full flex items-center justify-center transition-colors">
+                <i class="fa fa-shopping-cart"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 加载更多 -->
+      <div class="text-center mt-8">
+        <button class="px-6 py-2 border border-primary text-primary hover:bg-primary hover:text-white rounded-full transition-colors">
+          加载更多商品
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 产地直供 -->
+  <section class="py-10 bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="text-xl font-bold mb-6">产地直供</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="#" class="relative rounded-lg overflow-hidden h-48 md:h-64 group">
+          <img src="../img_buy/img09.png" alt="山东产区" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 p-4 text-white">
+            <h3 class="font-bold text-lg">山东产区</h3>
+            <p class="text-sm text-white/80">苹果 · 樱桃 · 蔬菜</p>
+          </div>
+        </a>
+        <a href="#" class="relative rounded-lg overflow-hidden h-48 md:h-64 group">
+          <img src="../img_buy/img10.png" alt="新疆产区" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 p-4 text-white">
+            <h3 class="font-bold text-lg">新疆产区</h3>
+            <p class="text-sm text-white/80">葡萄 · 哈密瓜 · 香梨</p>
+          </div>
+        </a>
+        <a href="#" class="relative rounded-lg overflow-hidden h-48 md:h-64 group">
+          <img src="../img_buy/img11.png" alt="东北产区" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 p-4 text-white">
+            <h3 class="font-bold text-lg">东北产区</h3>
+            <p class="text-sm text-white/80">大米 · 黑木耳 · 松子</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 用户评价 -->
+  <section class="py-10 bg-neutral-100">
+    <div class="container mx-auto px-4">
+      <h2 class="text-xl font-bold mb-6">用户评价</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 评价 1 -->
+        <div class="bg-white p-5 rounded-lg shadow-sm">
+          <div class="flex items-center mb-4">
+            <img src="https://picsum.photos/id/64/100/100" alt="用户头像" class="w-12 h-12 rounded-full object-cover">
+            <div class="ml-3">
+              <h4 class="font-medium">李**</h4>
+              <div class="flex text-yellow-400 text-xs mt-1">
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-neutral-600 text-sm mb-3">"苹果非常新鲜，口感脆甜，比超市买的好吃多了，孩子很喜欢。包装也很用心，没有一个坏果，会再次购买。"</p>
+          <p class="text-xs text-neutral-400">购买了：烟台红富士苹果 5斤装</p>
+        </div>
+
+        <!-- 评价 2 -->
+        <div class="bg-white p-5 rounded-lg shadow-sm">
+          <div class="flex items-center mb-4">
+            <img src="https://picsum.photos/id/65/100/100" alt="用户头像" class="w-12 h-12 rounded-full object-cover">
+            <div class="ml-3">
+              <h4 class="font-medium">王**</h4>
+              <div class="flex text-yellow-400 text-xs mt-1">
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star-half-o"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-neutral-600 text-sm mb-3">"蔬菜组合很丰富，种类多，新鲜度高，收到的时候还带着泥土的气息，感觉很原生态。价格也比菜市场实惠，值得推荐。"</p>
+          <p class="text-xs text-neutral-400">购买了：有机蔬菜组合 3斤装</p>
+        </div>
+
+        <!-- 评价 3 -->
+        <div class="bg-white p-5 rounded-lg shadow-sm">
+          <div class="flex items-center mb-4">
+            <img src="https://picsum.photos/id/66/100/100" alt="用户头像" class="w-12 h-12 rounded-full object-cover">
+            <div class="ml-3">
+              <h4 class="font-medium">张**</h4>
+              <div class="flex text-yellow-400 text-xs mt-1">
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-neutral-600 text-sm mb-3">"五常大米名不虚传，煮饭的时候满屋飘香，口感软糯有嚼劲，家人都很爱吃。会一直回购的，性价比很高。"</p>
+          <p class="text-xs text-neutral-400">购买了：五常有机大米 10斤装</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 下载APP -->
+  <section class="py-12 bg-primary/5">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row items-center justify-between">
+        <div class="md:w-1/2 mb-8 md:mb-0">
+          <h2 class="text-2xl font-bold mb-3">下载绿源鲜生APP</h2>
+          <p class="text-neutral-600 mb-6 max-w-md">随时随地选购新鲜农产品，新人专享50元礼包，更多优惠活动等你来</p>
+          <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+            <a href="#" class="bg-neutral-900 hover:bg-neutral-800 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+              <i class="fa fa-apple text-2xl mr-2"></i>
+              <div>
+                <div class="text-xs">下载</div>
+                <div class="font-medium">App Store</div>
+              </div>
+            </a>
+            <a href="#" class="bg-neutral-900 hover:bg-neutral-800 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+              <i class="fa fa-android text-2xl mr-2"></i>
+              <div>
+                <div class="text-xs">下载</div>
+                <div class="font-medium">Google Play</div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="md:w-1/3">
+          <img src="../picture/img07.png" alt="绿源鲜生APP" class="w-48 h-48 mx-auto rounded-xl shadow-lg">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="bg-neutral-900 text-white pt-12 pb-6">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center space-x-2 mb-6">
+            <i class="fa fa-leaf text-2xl text-primary"></i>
+            <span class="text-xl font-bold">绿源鲜生</span>
+          </div>
+          <p class="text-neutral-400 text-sm mb-6">我们致力于为您提供最新鲜的农产品，从产地直达餐桌，让健康饮食变得简单。</p>
+          <div class="flex space-x-4">
+            <a href="#" class="bg-neutral-800 hover:bg-primary w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+              <i class="fa fa-weixin"></i>
+            </a>
+            <a href="#" class="bg-neutral-800 hover:bg-primary w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+              <i class="fa fa-weibo"></i>
+            </a>
+            <a href="#" class="bg-neutral-800 hover:bg-primary w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+              <i class="fa fa-instagram"></i>
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-lg font-semibold mb-6">快速链接</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors">首页</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors">全部商品</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors">产地直供</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors">限时特惠</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors">关于我们</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-lg font-semibold mb-6">帮助中心</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors">购物指南</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors">支付方式</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors">配送说明</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors">退换政策</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors">常见问题</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-lg font-semibold mb-6">联系我们</h4>
+          <ul class="space-y-3 text-sm">
+            <li class="flex items-start">
+              <i class="fa fa-map-marker text-primary mt-1 mr-3"></i>
+              <span class="text-neutral-400">辽宁省沈阳市浑南区创新路195号</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa fa-phone text-primary mr-3"></i>
+              <span class="text-neutral-400">400-123-4567</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa fa-envelope text-primary mr-3"></i>
+              <span class="text-neutral-400">123456789@qq.com</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa fa-clock-o text-primary mr-3"></i>
+              <span class="text-neutral-400">9:00-21:00 (每日)</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="border-t border-neutral-800 pt-6 text-center text-neutral-500 text-xs">
+        <p>© 2023 绿源鲜生 版权所有 | 京ICP备12345678号 | 食品经营许可证：JY11010500000000</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 回到顶部按钮 -->
+  <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-30">
+    <i class="fa fa-chevron-up"></i>
+  </button>
+
+  <!-- JavaScript -->
+  <script>
+    // 导航栏滚动效果
+    const navbar = document.getElementById('navbar');
+    const backToTop = document.getElementById('back-to-top');
+
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 100) {
+        navbar.classList.add('shadow');
+        backToTop.classList.remove('translate-y-20', 'opacity-0');
+        backToTop.classList.add('translate-y-0', 'opacity-100');
+      } else {
+        navbar.classList.remove('shadow');
+        backToTop.classList.add('translate-y-20', 'opacity-0');
+        backToTop.classList.remove('translate-y-0', 'opacity-100');
+      }
+    });
+
+    // 移动端菜单
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const overlay = document.getElementById('overlay');
+
+    mobileMenuBtn.addEventListener('click', function() {
+      toggleMobileMenu(true);
+    });
+
+    overlay.addEventListener('click', function() {
+      toggleMobileMenu(false);
+      toggleCart(false);
+    });
+
+    function toggleMobileMenu(show) {
+      if (show) {
+        mobileMenu.classList.remove('-translate-y-full', 'opacity-0', 'invisible');
+        mobileMenu.classList.add('translate-y-0', 'opacity-100', 'visible');
+        overlay.classList.remove('opacity-0', 'invisible');
+        overlay.classList.add('opacity-100', 'visible');
+        document.body.style.overflow = 'hidden';
+      } else {
+        mobileMenu.classList.add('-translate-y-full', 'opacity-0', 'invisible');
+        mobileMenu.classList.remove('translate-y-0', 'opacity-100', 'visible');
+        overlay.classList.add('opacity-0', 'invisible');
+        overlay.classList.remove('opacity-100', 'visible');
+        document.body.style.overflow = '';
+      }
+    }
+
+    // 购物车侧边栏
+    const cartIcon = document.getElementById('cart-icon');
+    const cartSidebar = document.getElementById('cart-sidebar');
+    const closeCart = document.getElementById('close-cart');
+
+    cartIcon.addEventListener('click', function(e) {
+      e.preventDefault();
+      toggleCart(true);
+    });
+
+    closeCart.addEventListener('click', function() {
+      toggleCart(false);
+    });
+
+    function toggleCart(show) {
+      if (show) {
+        cartSidebar.classList.remove('translate-x-full');
+        overlay.classList.remove('opacity-0', 'invisible');
+        overlay.classList.add('opacity-100', 'visible');
+        document.body.style.overflow = 'hidden';
+      } else {
+        cartSidebar.classList.add('translate-x-full');
+        overlay.classList.add('opacity-0', 'invisible');
+        overlay.classList.remove('opacity-100', 'visible');
+        document.body.style.overflow = '';
+      }
+    }
+
+    // 回到顶部
+    backToTop.addEventListener('click', function() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    // 加入购物车按钮效果
+    document.querySelectorAll('button:has(.fa-shopping-cart)').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // 添加按钮动画
+        this.classList.add('bg-primary', 'text-white');
+        this.classList.remove('bg-primary/10', 'text-primary');
+
+        setTimeout(() => {
+          this.classList.remove('bg-primary', 'text-white');
+          this.classList.add('bg-primary/10', 'text-primary');
+
+          // 显示购物车
+          toggleCart(true);
+        }, 500);
+      });
+    });
+  </script>
+</body>
+</html>
